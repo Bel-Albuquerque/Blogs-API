@@ -12,9 +12,7 @@ module.exports = {
       displayName: {
         allowNull: false,
         type: Sequelize.STRING,
-        validate: {
-          min: 8
-        }
+
       },
       email: {
         allowNull: false,
@@ -23,15 +21,12 @@ module.exports = {
         validate: {
           isEmail: true,
           notEmpty: true
-        } 
+        }
       },
       password: {
         allowNull: false,
         type: Sequelize.STRING,
-        unique: true,
-        validate: {
-          min: 6,
-        }
+
       },
       image: {
         type: Sequelize.STRING,
