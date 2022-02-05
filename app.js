@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const userRouter = require('./routers/userRouter');
+const loginRouter = require('./routers/loginRouter');
 
 app.use(bodyParser.json());
 
-// app.post('/login');
-// app.post('/signup');
 app.use('/', userRouter);
+app.use('/', loginRouter);
 
 module.exports = app; 
