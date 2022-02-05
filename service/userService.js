@@ -41,11 +41,15 @@ const validateEmptyNotAllowed = (body, array, message = false) => {
 
 const validateBodyHaveKeys = (body, array, message = false) => {
   const retorno = array.reduce((acc, cur) => {
-    console.log(cur);
     if (!body[cur] && acc.length < 1) return messageIsRequired(cur);
     return acc;
   }, []);
   return retorno.length < 1 ? message : retorno;
+};
+
+const decoder = async (token) => {
+  const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+  return decoded.user;
 };
 
 const create = async (body) => {
@@ -67,8 +71,7 @@ const findOne = async (body) => {
     const { email, password } = body;
     const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
     const token = generateToken({ user: user.displayName }, process.env.JWT_SECRET, jwtConfig);
-    const status = 200;
-    return { status, json: token };
+    return { status: 200, json: { token } };
   } catch (err) {
     const erro = validateEmptyNotAllowed(body, arrayFindOne) || (
       validateBodyHaveKeys(body, arrayFindOne, { message: 'Invalid fields' }));
@@ -76,7 +79,22 @@ const findOne = async (body) => {
   }
 };
 
+const getAll = async (token) => {
+  try {
+   const userName = await decoder(token);
+    await User.findOne({ where: { displayName: userName } });
+    const users = await User.findAll({
+      attributes: { exclude: 'password' },
+    });
+    return { status: 200, json: users };
+  } catch (e) {
+    const json = { message: 'Expired or invalid token' };
+    return { status: 401, json };
+  }
+};
+
 module.exports = {
   create,
   findOne,
+  getAll,
 };
