@@ -5,6 +5,6 @@ const loginController = require('../controller/loginController');
 
 router
 .route('/login')
-.post(loginController.create);
+.post(loginController.login);
 
 module.exports = router; 
