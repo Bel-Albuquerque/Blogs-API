@@ -14,37 +14,37 @@ const generateToken = (data, secret, config) => {
   return token;
 };
 
-const erroMessage = (e) => {
-  if (e.path === 'displayName') {
-    return { message: '"displayName" length must be at least 8 characters long' };
-  }
-  if (e.path === 'email') return { message: '"email" must be a valid email' };
-
-  if (e.path === 'password') return { message: '"password" length must be 6 characters long' };
-};
+const arrayCreate = ['displayName', 'email', 'password'];
+const arrayFindOne = ['email', 'password'];
+const atLast = (bool) => (bool ? ' at least ' : ' ');
 
 const messageIsRequired = (key) => ({ message: `"${key}" is required` });
+const messageEmptyNotAllowed = (key) => ({ message: `"${key}" is not allowed to be empty` });
+const messageLengthRequired = (key, length, bool = false) => (
+  { message: `"${key}" length must be${atLast(bool)}${length} characters long` });
 
-const messageEmptyNotAllowed = (body, arrayFindOne, message = false) => {
-  const retorno = arrayFindOne.reduce((acc, cur) => {
+const erroMessage = (e) => {
+  if (e.path === 'displayName') return messageLengthRequired('displayName', 8, true);
+  if (e.path === 'email') return { message: '"email" must be a valid email' };
+  if (e.path === 'password') return messageLengthRequired('password', 6);
+};
+
+const validateEmptyNotAllowed = (body, array, message = false) => {
+  const retorno = array.reduce((acc, cur) => {
     if (body[cur] === '' && acc.length < 1) {
-      return { message: `"${cur}" is not allowed to be empty` };
+      return messageEmptyNotAllowed(cur);
     }
     return acc;
   }, []);
   return retorno.length < 1 ? message : retorno;
 };
 
-const arrayCreate = ['displayName', 'email', 'password'];
-const arrayFindOne = ['email', 'password'];
-
-const validaBody = (body, array, message = false) => {
+const validateBodyHaveKeys = (body, array, message = false) => {
   const retorno = array.reduce((acc, cur) => {
     console.log(cur);
     if (!body[cur] && acc.length < 1) return messageIsRequired(cur);
     return acc;
   }, []);
-  console.log(retorno);
   return retorno.length < 1 ? message : retorno;
 };
 
@@ -52,11 +52,9 @@ const create = async (body) => {
   try {
     await User.create(body);
     const token = generateToken({ user: body.displayName }, process.env.JWT_SECRET, jwtConfig);
-
     return { status: 201, json: { token } };
   } catch (err) {
-    const erro = validaBody(body, arrayCreate) || erroMessage(err.errors[0]);
-
+    const erro = validateBodyHaveKeys(body, arrayCreate) || erroMessage(err.errors[0]);
     if (!erro) {
       return { status: 409, json: { message: 'User already registered' } };
     }
@@ -66,19 +64,14 @@ const create = async (body) => {
 
 const findOne = async (body) => {
   try {
-    let erro;
     const { email, password } = body;
     const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
-    // if (!user) {
-    //   erro = ;
-    // }
     const token = generateToken({ user: user.displayName }, process.env.JWT_SECRET, jwtConfig);
-    const json = erro || token;
-    const status = erro ? 400 : 200;
-    return { status, json };
+    const status = 200;
+    return { status, json: token };
   } catch (err) {
-    const erro = messageEmptyNotAllowed(body, arrayFindOne) || (
-      validaBody(body, arrayFindOne, { message: 'Invalid fields' }));
+    const erro = validateEmptyNotAllowed(body, arrayFindOne) || (
+      validateBodyHaveKeys(body, arrayFindOne, { message: 'Invalid fields' }));
     return { status: 400, json: erro };
   }
 };
