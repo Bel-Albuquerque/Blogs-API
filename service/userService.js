@@ -34,7 +34,7 @@ const validaBody = (body) => {
 const create = async (body) => {
   try {
     await User.create(body);
-    const token = generateToken({ user: body.displayName }, process.env.TOP_SECRET, jwtConfig);
+    const token = generateToken({ user: body.displayName }, process.env.JWT_SECRET, jwtConfig);
 
     return { status: 201, json: { token } };
   } catch (err) {
