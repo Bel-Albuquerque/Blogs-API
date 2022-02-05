@@ -34,12 +34,13 @@ const validaBody = (body) => {
 const create = async (body) => {
   try {
     await User.create(body);
-
     const token = generateToken({ user: body.displayName }, process.env.TOP_SECRET, jwtConfig);
+
     return { status: 201, json: { token } };
   } catch (err) {
     const erro = validaBody(body) || erroMessage(err.errors[0]);
-    if (err.errors && err.errors[0].path === 'Users.email') {
+
+    if (!erro) {
       return { status: 409, json: { message: 'User already registered' } };
     }
     return { status: 400, json: erro };
