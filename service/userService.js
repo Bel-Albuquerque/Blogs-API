@@ -24,9 +24,12 @@ const erroMessage = (e) => {
 };
 
 const messageIsRequired = (key) => ({ message: `"${key}" is required` });
+
 const messageEmptyNotAllowed = (body, arrayFindOne, message = false) => {
   const retorno = arrayFindOne.reduce((acc, cur) => {
-    if (!body[cur]) return { message: `"${cur}" is not allowed to be empty` };
+    if (body[cur] === '' && acc.length < 1) {
+      return { message: `"${cur}" is not allowed to be empty` };
+    }
     return acc;
   }, []);
   return retorno.length < 1 ? message : retorno;
@@ -35,14 +38,14 @@ const messageEmptyNotAllowed = (body, arrayFindOne, message = false) => {
 const arrayCreate = ['displayName', 'email', 'password'];
 const arrayFindOne = ['email', 'password'];
 
-const validaBody = (body, array) => {
+const validaBody = (body, array, message = false) => {
   const retorno = array.reduce((acc, cur) => {
     console.log(cur);
     if (!body[cur] && acc.length < 1) return messageIsRequired(cur);
     return acc;
   }, []);
   console.log(retorno);
-  return retorno.length < 1 ? false : retorno;
+  return retorno.length < 1 ? message : retorno;
 };
 
 const create = async (body) => {
@@ -65,16 +68,17 @@ const findOne = async (body) => {
   try {
     let erro;
     const { email, password } = body;
-    const user = await User.findAll({ where: { [Op.and]: [{ password }, { email }] } });
-    if (user.length < 1) {
-      erro = messageEmptyNotAllowed(body, arrayFindOne, { message: 'Invalid fields' });
-    }
+    const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
+    // if (!user) {
+    //   erro = ;
+    // }
     const token = generateToken({ user: user.displayName }, process.env.JWT_SECRET, jwtConfig);
     const json = erro || token;
     const status = erro ? 400 : 200;
     return { status, json };
   } catch (err) {
-    const erro = validaBody(body, arrayFindOne);
+    const erro = messageEmptyNotAllowed(body, arrayFindOne) || (
+      validaBody(body, arrayFindOne, { message: 'Invalid fields' }));
     return { status: 400, json: erro };
   }
 };
