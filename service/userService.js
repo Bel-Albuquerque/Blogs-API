@@ -3,19 +3,23 @@ const { User } = require('../models');
 require('dotenv').config();
 
 const {
-  erroMessage,
-  validateEmptyNotAllowed,
-  validateBodyHaveKeys,
-} = require('../validations/erroValidations');
+  createErrorCases,
+  loginErrorCases,
+  successRequest,
+  erroRequest,
+} = require('../validations/errorValidations');
+
+const {
+  userInexist,
+  expiredToken,
+  notFound,
+} = require('../validations/errorMessages');
 
 const {
   jwtConfig,
   generateToken,
   decoder,
 } = require('../validations/tokenValidations');
-
-const arrayCreate = ['displayName', 'email', 'password'];
-const arrayFindOne = ['email', 'password'];
 
 const { Op } = Sequelize;
 
@@ -25,24 +29,18 @@ const create = async (body) => {
     const token = generateToken({ user: body.displayName }, process.env.JWT_SECRET, jwtConfig);
     return { status: 201, json: { token } };
   } catch (err) {
-    const erro = validateBodyHaveKeys(body, arrayCreate) || erroMessage(err.errors[0]);
-    if (!erro) {
-      return { status: 409, json: { message: 'User already registered' } };
-    }
-    return { status: 400, json: erro };
+    return createErrorCases(body, err);
   }
 };
 
-const findOne = async (body) => {
+const login = async (body) => {
   try {
     const { email, password } = body;
     const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
     const token = generateToken({ user: user.displayName }, process.env.JWT_SECRET, jwtConfig);
     return { status: 200, json: { token } };
   } catch (err) {
-    const erro = validateEmptyNotAllowed(body, arrayFindOne) || (
-      validateBodyHaveKeys(body, arrayFindOne, { message: 'Invalid fields' }));
-    return { status: 400, json: erro };
+      return loginErrorCases(body);
   }
 };
 
@@ -61,11 +59,9 @@ const findUser = async (keyProperty) => {
         attributes: { exclude: 'password' },
       },
     );
-
     return returnUser;
   } catch (e) {
-    const json = { message: 'Not found' };
-    return { status: 401, json };
+    return erroRequest(401, notFound);
   }
 };
 
@@ -74,17 +70,16 @@ const getOneOrAllUsers = async (token, callback, id = false) => {
     const userName = await decoder(token);
     await User.findOne({ where: { displayName: userName } });
     const users = id ? await callback(id) : await callback();
-    const json = { message: 'User does not exist' };
-    return !users ? { status: 404, json } : { status: 200, json: users };
+
+    return !users ? erroRequest(404, userInexist) : successRequest(200, users);
   } catch (e) {
-    const json = { message: 'Expired or invalid token' };
-    return { status: 401, json };
+    return erroRequest(401, expiredToken);
   }
 };
 
 module.exports = {
   create,
-  findOne,
+  login,
   getOneOrAllUsers,
   findAll,
   findUser,
