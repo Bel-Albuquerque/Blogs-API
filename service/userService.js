@@ -46,13 +46,18 @@ const findOne = async (body) => {
   }
 };
 
+const findAll = async () => {
+  const users = await User.findAll({
+    attributes: { exclude: 'password' },
+  });
+  return users;
+}
+
 const getAll = async (token) => {
   try {
    const userName = await decoder(token);
     await User.findOne({ where: { displayName: userName } });
-    const users = await User.findAll({
-      attributes: { exclude: 'password' },
-    });
+    const users = await findAll();
     return { status: 200, json: users };
   } catch (e) {
     const json = { message: 'Expired or invalid token' };
