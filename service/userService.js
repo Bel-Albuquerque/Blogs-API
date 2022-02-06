@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const { User } = require('../models');
 require('dotenv').config();
 
-const { 
+const {
   erroMessage,
   validateEmptyNotAllowed,
   validateBodyHaveKeys,
@@ -51,14 +51,31 @@ const findAll = async () => {
     attributes: { exclude: 'password' },
   });
   return users;
-}
+};
 
-const getAll = async (token) => {
+const findUser = async (keyProperty) => {
   try {
-   const userName = await decoder(token);
+    const returnUser = await User.findOne(
+      {
+        where: { id: keyProperty },
+        attributes: { exclude: 'password' },
+      },
+    );
+
+    return returnUser;
+  } catch (e) {
+    const json = { message: 'Not found' };
+    return { status: 401, json };
+  }
+};
+
+const getOneOrAllUsers = async (token, callback, id = false) => {
+  try {
+    const userName = await decoder(token);
     await User.findOne({ where: { displayName: userName } });
-    const users = await findAll();
-    return { status: 200, json: users };
+    const users = id ? await callback(id) : await callback();
+    const json = { message: 'User does not exist' };
+    return !users ? { status: 404, json } : { status: 200, json: users };
   } catch (e) {
     const json = { message: 'Expired or invalid token' };
     return { status: 401, json };
@@ -68,5 +85,7 @@ const getAll = async (token) => {
 module.exports = {
   create,
   findOne,
-  getAll,
+  getOneOrAllUsers,
+  findAll,
+  findUser,
 };
