@@ -8,11 +8,20 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   const { authorization } = req.headers;
   if (!authorization) return res.status(401).json({ message: 'Token not found' });
-  const response = await userService.getAll(authorization);
+  const response = await userService.getOneOrAllUsers(authorization, userService.findAll);
+  return res.status(response.status).json(response.json);
+};
+
+const getById = async (req, res) => {
+  const { authorization } = req.headers;
+  const { id } = req.params;
+  if (!authorization) return res.status(401).json({ message: 'Token not found' });
+  const response = await userService.getOneOrAllUsers(authorization, userService.findUser, id);
   return res.status(response.status).json(response.json);
 };
 
 module.exports = {
   create,
   getAll,
+  getById,
 };
