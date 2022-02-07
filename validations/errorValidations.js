@@ -5,6 +5,7 @@ const {
   fieldIsRequired,
   fieldEmptyIsNotAllowed,
   fieldLengthRequired,
+  expiredToken,
 } = require('./errorMessages');
 
 const arrayCreate = ['displayName', 'email', 'password'];
@@ -51,9 +52,19 @@ const loginErrorCases = (body) => {
   return erroRequest(400, erro);
 };
 
+const createCategorieErrorCases = (body) => {
+  const nameIsFalse = validateBodyHaveKeys(body, ['name']);
+  if (nameIsFalse) {
+    return erroRequest(400, nameIsFalse);
+  }
+  return erroRequest(401, expiredToken);
+};
+
 module.exports = {
   createErrorCases,
   loginErrorCases,
   successRequest,
   erroRequest,
+  validateBodyHaveKeys,
+  createCategorieErrorCases,
 };

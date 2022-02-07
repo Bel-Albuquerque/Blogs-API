@@ -13,6 +13,7 @@ const userDoExist = { message: 'User already registered' };
 const invalidFields = { message: 'Invalid fields' };
 const notFound = { message: 'Not found' };
 const emailMustBeValid = { message: '"email" must be a valid email' };
+const tokenNotFound = { message: 'Token not found' };
 
 module.exports = {
   fieldIsRequired,
@@ -24,4 +25,5 @@ module.exports = {
   invalidFields,
   notFound,
   emailMustBeValid,
+  tokenNotFound,
 };
