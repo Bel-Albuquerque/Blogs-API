@@ -5,6 +5,7 @@ const router = express.Router();
 
 router
   .route('/categories')
-  .post(categorieController.create);
+  .post(categorieController.create)
+  .get(categorieController.getAll);
 
 module.exports = router; 
