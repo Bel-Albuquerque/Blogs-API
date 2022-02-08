@@ -10,6 +10,7 @@ const {
 
 const arrayCreate = ['displayName', 'email', 'password'];
 const arrayLogin = ['email', 'password'];
+const arrayEditPost = ['title', 'content'];
 
 const successRequest = (number, message) => ({ status: number, json: message });
 const erroRequest = (number, message) => ({ status: number, json: message });
@@ -62,6 +63,13 @@ const createCategorieError = (body) => {
   return erroRequest(401, expiredToken);
 };
 
+const postEditError = (body) => {
+  const bodyRequiredIsFalse = validateBodyHaveKeys(body, arrayEditPost);
+  if (bodyRequiredIsFalse) return erroRequest(400, bodyRequiredIsFalse);
+  if (body.categoryIds) return erroRequest(400, { message: 'Categories cannot be edited' });
+  return false;
+};
+
 module.exports = {
   createUserError,
   loginError,
@@ -69,4 +77,5 @@ module.exports = {
   erroRequest,
   validateBodyHaveKeys,
   createCategorieError,
+  postEditError,
 };

@@ -4,6 +4,7 @@ const {
   validateBodyHaveKeys,
   successRequest,
   erroRequest,
+  postEditError,
 } = require('../validations/errorValidations');
 
 const {
@@ -51,7 +52,7 @@ const getAllPosts = async (token) => {
   try {
     const { id: userId } = await decoder(token);
     await User.findOne({ where: { id: userId } });
-  
+
     const allPosts = await BlogPost.findAll(
       {
         include: [
@@ -70,7 +71,7 @@ const getPostById = async (id, token) => {
   try {
     const { id: userId } = await decoder(token);
     await User.findOne({ where: { id: userId } });
-  
+
     const allPosts = await BlogPost.findOne(
       {
         where: { id },
@@ -86,8 +87,28 @@ const getPostById = async (id, token) => {
   }
 };
 
+const updatePost = async (id, token, body) => {
+  try {
+    const { title, content } = body;
+    const { id: userId } = await decoder(token);
+    const editPost = await BlogPost.findByPk(Number(id));
+
+    if (userId !== editPost.userId) return erroRequest(401, { message: 'Unauthorized user' });
+
+    const bodyDoesNotExist = postEditError(body);
+    if (bodyDoesNotExist) return bodyDoesNotExist;
+
+    await BlogPost.update({ title, content }, { where: { id } });
+
+    return await getPostById(id, token);
+  } catch (e) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
   getPostById,
+  updatePost,
 };
