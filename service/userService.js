@@ -64,7 +64,7 @@ const findUser = async (keyProperty) => {
   }
 };
 
-// Coruja aconselhou deichar as funções mais legíveis, por isso, separei em duas.
+// Coruja aconselhou deixar as funções mais legíveis, por isso, separei em duas.
 
 // const getOneOrAllUsers = async (token, callback, id = false) => {
 //   try {

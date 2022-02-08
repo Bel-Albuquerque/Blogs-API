@@ -38,6 +38,8 @@ const validateBodyHaveKeys = (body, array, message = false) => {
   return retorno.length < 1 ? message : retorno;
 };
 
+// __________________________________________________________________
+
 const createUserError = (body, error) => {
   const erro = validateBodyHaveKeys(body, arrayCreate) || validatesFieldsContent(error.errors[0]);
   if (!erro) {

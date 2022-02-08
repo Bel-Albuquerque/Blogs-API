@@ -38,9 +38,8 @@ const createPost = async (body, token) => {
 
     const error = validateBodyHaveKeys(body, arrayCreatePost);
     if (error) return erroRequest(400, error);
-
+    
     const { id } = await BlogPost.create({ title, content, userId });
-
     return await mapCreatePostsCategories(body, id, userId);
   } catch (err) {
     return erroRequest(401, expiredToken);
