@@ -1,4 +1,4 @@
-const { User, BlogPost, PostsCategorie } = require('../models');
+const { User, BlogPost, PostsCategorie, Categorie } = require('../models');
 
 const {
   validateBodyHaveKeys,
@@ -38,7 +38,7 @@ const createPost = async (body, token) => {
 
     const error = validateBodyHaveKeys(body, arrayCreatePost);
     if (error) return erroRequest(400, error);
-    
+
     const { id } = await BlogPost.create({ title, content, userId });
     return await mapCreatePostsCategories(body, id, userId);
   } catch (err) {
@@ -46,6 +46,26 @@ const createPost = async (body, token) => {
   }
 };
 
+const getAllPosts = async (token) => {
+  try {
+    const { id: userId } = await decoder(token);
+    await User.findOne({ where: { id: userId } });
+  
+    const allPosts = await BlogPost.findAll(
+      {
+        include: [
+          { model: User, as: 'user', attributes: { exclude: ['password'] } },
+          { model: Categorie, as: 'categories', through: { attributes: [] } },
+        ],
+      },
+    );
+    return successRequest(200, allPosts);
+  } catch (err) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
 module.exports = {
   createPost,
+  getAllPosts,
 };
