@@ -35,6 +35,7 @@ const login = async (body) => {
   try {
     const { email, password } = body;
     const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
+    if (!user) return loginError(body);
     const token = generateToken({ user });
     return { status: 200, json: { token } };
   } catch (err) {
