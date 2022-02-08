@@ -1,5 +1,5 @@
 const {
-  userDoExist,
+  userAlreadyExist,
   invalidFields,
   emailMustBeValid,
   fieldIsRequired,
@@ -38,21 +38,21 @@ const validateBodyHaveKeys = (body, array, message = false) => {
   return retorno.length < 1 ? message : retorno;
 };
 
-const createErrorCases = (body, error) => {
+const createUserError = (body, error) => {
   const erro = validateBodyHaveKeys(body, arrayCreate) || validatesFieldsContent(error.errors[0]);
   if (!erro) {
-    return erroRequest(409, userDoExist);
+    return erroRequest(409, userAlreadyExist);
   }
   return erroRequest(400, erro);
 };
 
-const loginErrorCases = (body) => {
+const loginError = (body) => {
   const erro = validateEmptyNotAllowed(body, arrayLogin) || (
     validateBodyHaveKeys(body, arrayLogin)) || invalidFields;
   return erroRequest(400, erro);
 };
 
-const createCategorieErrorCases = (body) => {
+const createCategorieError = (body) => {
   const nameIsFalse = validateBodyHaveKeys(body, ['name']);
   if (nameIsFalse) {
     return erroRequest(400, nameIsFalse);
@@ -61,10 +61,10 @@ const createCategorieErrorCases = (body) => {
 };
 
 module.exports = {
-  createErrorCases,
-  loginErrorCases,
+  createUserError,
+  loginError,
   successRequest,
   erroRequest,
   validateBodyHaveKeys,
-  createCategorieErrorCases,
+  createCategorieError,
 };

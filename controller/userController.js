@@ -9,7 +9,7 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   const { authorization } = req.headers;
   if (!authorization) return res.status(401).json(tokenNotFound);
-  const response = await userService.getOneOrAllUsers(authorization, userService.findAll);
+  const response = await userService.getAllUsers(authorization);
   return res.status(response.status).json(response.json);
 };
 
@@ -17,7 +17,7 @@ const getById = async (req, res) => {
   const { authorization } = req.headers;
   const { id } = req.params;
   if (!authorization) return res.status(401).json(tokenNotFound);
-  const response = await userService.getOneOrAllUsers(authorization, userService.findUser, id);
+  const response = await userService.getUserById(authorization, id);
   return res.status(response.status).json(response.json);
 };
 

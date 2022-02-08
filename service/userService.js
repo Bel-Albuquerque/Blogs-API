@@ -1,10 +1,9 @@
 const Sequelize = require('sequelize');
 const { User } = require('../models');
-require('dotenv').config();
 
 const {
-  createErrorCases,
-  loginErrorCases,
+  createUserError,
+  loginError,
   successRequest,
   erroRequest,
 } = require('../validations/errorValidations');
@@ -16,7 +15,6 @@ const {
 } = require('../validations/errorMessages');
 
 const {
-  jwtConfig,
   generateToken,
   decoder,
 } = require('../validations/tokenValidations');
@@ -25,11 +23,11 @@ const { Op } = Sequelize;
 
 const create = async (body) => {
   try {
-    await User.create(body);
-    const token = generateToken({ user: body.displayName }, process.env.JWT_SECRET, jwtConfig);
+    const user = await User.create(body);
+    const token = generateToken({ user });
     return { status: 201, json: { token } };
   } catch (err) {
-    return createErrorCases(body, err);
+    return createUserError(body, err);
   }
 };
 
@@ -37,10 +35,10 @@ const login = async (body) => {
   try {
     const { email, password } = body;
     const user = await User.findOne({ where: { [Op.and]: [{ password }, { email }] } });
-    const token = generateToken({ user: user.displayName }, process.env.JWT_SECRET, jwtConfig);
+    const token = generateToken({ user });
     return { status: 200, json: { token } };
   } catch (err) {
-      return loginErrorCases(body);
+      return loginError(body);
   }
 };
 
@@ -65,11 +63,37 @@ const findUser = async (keyProperty) => {
   }
 };
 
-const getOneOrAllUsers = async (token, callback, id = false) => {
+// Coruja aconselhou deichar as funções mais legíveis, por isso, separei em duas.
+
+// const getOneOrAllUsers = async (token, callback, id = false) => {
+//   try {
+//     const { displayName } = await decoder(token);
+//     await User.findOne({ where: { displayName } });
+//     const users = id ? await callback(id) : await callback();
+
+//     return !users ? erroRequest(404, userInexist) : successRequest(200, users);
+//   } catch (e) {
+//     return erroRequest(401, expiredToken);
+//   }
+// };
+
+const getUserById = async (token, id) => {
   try {
-    const userName = await decoder(token);
-    await User.findOne({ where: { displayName: userName } });
-    const users = id ? await callback(id) : await callback();
+    const { displayName } = await decoder(token);
+    await User.findOne({ where: { displayName } });
+    const users = await findUser(id);
+
+    return !users ? erroRequest(404, userInexist) : successRequest(200, users);
+  } catch (e) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
+const getAllUsers = async (token) => {
+  try {
+    const { displayName } = await decoder(token);
+    await User.findOne({ where: { displayName } });
+    const users = await findAll();
 
     return !users ? erroRequest(404, userInexist) : successRequest(200, users);
   } catch (e) {
@@ -80,7 +104,9 @@ const getOneOrAllUsers = async (token, callback, id = false) => {
 module.exports = {
   create,
   login,
-  getOneOrAllUsers,
+  // getOneOrAllUsers,
   findAll,
   findUser,
+  getUserById,
+  getAllUsers,
 };

@@ -9,7 +9,7 @@ const fieldLengthRequired = (key, length, bool = false) => (
 
 const userInexist = { message: 'User does not exist' };
 const expiredToken = { message: 'Expired or invalid token' };
-const userDoExist = { message: 'User already registered' };
+const userAlreadyExist = { message: 'User already registered' };
 const invalidFields = { message: 'Invalid fields' };
 const notFound = { message: 'Not found' };
 const emailMustBeValid = { message: '"email" must be a valid email' };
@@ -21,7 +21,7 @@ module.exports = {
   fieldLengthRequired,
   userInexist,
   expiredToken,
-  userDoExist,
+  userAlreadyExist,
   invalidFields,
   notFound,
   emailMustBeValid,
