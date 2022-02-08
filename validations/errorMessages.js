@@ -7,6 +7,8 @@ const fieldEmptyIsNotAllowed = (key) => ({ message: `"${key}" is not allowed to 
 const fieldLengthRequired = (key, length, bool = false) => (
   { message: `"${key}" length must be${atLast(bool)}${length} characters long` });
 
+const fieldNotFound = (field) => ({ message: `"${field}" not found` });
+
 const userInexist = { message: 'User does not exist' };
 const expiredToken = { message: 'Expired or invalid token' };
 const userAlreadyExist = { message: 'User already registered' };
@@ -19,6 +21,7 @@ module.exports = {
   fieldIsRequired,
   fieldEmptyIsNotAllowed,
   fieldLengthRequired,
+  fieldNotFound,
   userInexist,
   expiredToken,
   userAlreadyExist,
