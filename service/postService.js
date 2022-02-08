@@ -1,9 +1,7 @@
-const Sequelize = require('sequelize');
-const { User, Categorie, BlogPost, PostsCategorie } = require('../models');
+const { User, BlogPost, PostsCategorie } = require('../models');
 
 const {
   validateBodyHaveKeys,
-  loginError,
   successRequest,
   erroRequest,
 } = require('../validations/errorValidations');
@@ -14,13 +12,10 @@ const {
 } = require('../validations/errorMessages');
 
 const {
-  generateToken,
   decoder,
 } = require('../validations/tokenValidations');
 
 const arrayCreatePost = ['title', 'categoryIds', 'content'];
-
-const { Op } = Sequelize;
 
 const mapCreatePostsCategories = async (body, postId, userId) => {
   const { title, categoryIds, content } = body;
