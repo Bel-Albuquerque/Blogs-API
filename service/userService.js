@@ -9,7 +9,7 @@ const {
 } = require('../validations/errorValidations');
 
 const {
-  userInexist,
+  fielfInexist,
   expiredToken,
   notFound,
 } = require('../validations/errorMessages');
@@ -84,7 +84,7 @@ const getUserById = async (token, id) => {
     await User.findOne({ where: { displayName } });
     const users = await findUser(id);
 
-    return !users ? erroRequest(404, userInexist) : successRequest(200, users);
+    return !users ? erroRequest(404, fielfInexist('User')) : successRequest(200, users);
   } catch (e) {
     return erroRequest(401, expiredToken);
   }
@@ -96,7 +96,7 @@ const getAllUsers = async (token) => {
     await User.findOne({ where: { displayName } });
     const users = await findAll();
 
-    return !users ? erroRequest(404, userInexist) : successRequest(200, users);
+    return !users ? erroRequest(404, fielfInexist('User')) : successRequest(200, users);
   } catch (e) {
     return erroRequest(401, expiredToken);
   }

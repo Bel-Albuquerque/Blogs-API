@@ -9,6 +9,7 @@ const {
 const {
   fieldNotFound,
   expiredToken,
+  fielfInexist,
 } = require('../validations/errorMessages');
 
 const {
@@ -34,7 +35,7 @@ const createPost = async (body, token) => {
   const { title, content } = body;
   try {
     const { id: userId } = await decoder(token);
-    await User.findOne({ where: { id: userId } });
+    await User.findOne({ where: { id: userId } }); // valida token
 
     const error = validateBodyHaveKeys(body, arrayCreatePost);
     if (error) return erroRequest(400, error);
@@ -65,7 +66,28 @@ const getAllPosts = async (token) => {
   }
 };
 
+const getPostById = async (id, token) => {
+  try {
+    const { id: userId } = await decoder(token);
+    await User.findOne({ where: { id: userId } });
+  
+    const allPosts = await BlogPost.findOne(
+      {
+        where: { id },
+        include: [
+          { model: User, as: 'user', attributes: { exclude: ['password'] } },
+          { model: Categorie, as: 'categories', through: { attributes: [] } },
+        ],
+      },
+    );
+    return allPosts ? successRequest(200, allPosts) : erroRequest(404, fielfInexist('Post'));
+  } catch (err) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
+  getPostById,
 };
