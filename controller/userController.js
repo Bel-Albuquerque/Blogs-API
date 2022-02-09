@@ -21,8 +21,16 @@ const getById = async (req, res) => {
   return res.status(response.status).json(response.json);
 };
 
+const deleteMe = async (req, res) => {
+  const { authorization } = req.headers;
+  if (!authorization) return res.status(401).json(tokenNotFound);
+  const response = await userService.deleteMe(authorization);
+  return res.status(response.status).json(response.json);
+};
+
 module.exports = {
   create,
   getAll,
   getById,
+  deleteMe,
 };

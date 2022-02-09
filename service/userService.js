@@ -102,6 +102,17 @@ const getAllUsers = async (token) => {
   }
 };
 
+const deleteMe = async (token) => {
+  try {
+    const { id } = await decoder(token);
+    await User.destroy({ where: { id } });
+
+    return successRequest(204, '');
+  } catch (e) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
 module.exports = {
   create,
   login,
@@ -110,4 +121,5 @@ module.exports = {
   findUser,
   getUserById,
   getAllUsers,
+  deleteMe,
 };

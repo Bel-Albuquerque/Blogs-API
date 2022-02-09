@@ -4,6 +4,10 @@ const router = express.Router();
 const userController = require('../controller/userController');
 
 router
+.route('/user/me')
+.delete(userController.deleteMe);
+
+router
 .route('/user/:id')
 .get(userController.getById);
 
