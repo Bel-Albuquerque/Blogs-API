@@ -101,7 +101,23 @@ const updatePost = async (id, token, body) => {
     await BlogPost.update({ title, content }, { where: { id } });
 
     return await getPostById(id, token);
-  } catch (e) {
+  } catch (err) {
+    return erroRequest(401, expiredToken);
+  }
+};
+
+const deletePost = async (id, token) => {
+  try {
+    const { id: userId } = await decoder(token);
+    const editPost = await BlogPost.findByPk(Number(id));
+
+    if (!editPost) return erroRequest(404, { message: 'Post does not exist' });
+    if (userId !== editPost.userId) return erroRequest(401, { message: 'Unauthorized user' });
+
+    const test = await BlogPost.destroy({ where: { id } });
+    console.log(test);
+    return successRequest(204, false);
+  } catch (err) {
     return erroRequest(401, expiredToken);
   }
 };
@@ -111,4 +127,5 @@ module.exports = {
   getAllPosts,
   getPostById,
   updatePost,
+  deletePost,
 };
