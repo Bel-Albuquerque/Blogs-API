@@ -1,13 +1,16 @@
 # Blogs API
 
-
 ## Contexto
-**(texto a baixo de autoria da [Trybe](https://github.com/tryber))**:
+Projeto desenvolvido durante o curso da [Trybe](https://github.com/tryber).
+Nesse projeto construi uma API utilizando Sequelize, NodeJs, Express.
 
- - Criar e associar tabelas usando `models` do `sequelize`
- - Construir endpoints para consumir os models que criar 
- - Fazer um `CRUD` com o `ORM`
 
-## Técnologias usadas
+Criei tabelas usando `models` do `sequelize` e constui endpoints para consumir os models que construí.
 
- Sequelize, JS
+## Para baixar o projeto:
+* Clone o repositório
+* git clone `git@github.com:Bel-Albuquerque/Blogs-API.git`
+* Entre na pasta do repositório que você acabou de clonar:
+* `cd Blogs-API`
+* Instale as dependências `npm install`
+* Para rodar o o projeto `npm start`
