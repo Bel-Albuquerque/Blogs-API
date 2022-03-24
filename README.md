@@ -7,8 +7,7 @@ Nesse projeto construi uma API utilizando Sequelize, NodeJs, Express.
 
 Criei tabelas usando `models` do `sequelize` e constui endpoints para consumir os models que construí.
 
-## Para baixar o projeto:
-* Clone o repositório
+## Clone o repositório
 * git clone `git@github.com:Bel-Albuquerque/Blogs-API.git`
 * Entre na pasta do repositório que você acabou de clonar:
 * `cd Blogs-API`
