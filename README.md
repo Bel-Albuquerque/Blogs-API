@@ -5,7 +5,7 @@ Projeto desenvolvido durante o curso da [Trybe](https://github.com/tryber).
 Nesse projeto construi uma API utilizando Sequelize, NodeJs, Express.
 
 
-Criei tabelas usando `models` do `sequelize` e constui endpoints para consumir os models que construí.
+Criei tabelas usando `models` do `sequelize` e constuí endpoints para consumir os models que construí.
 
 ## Clone o repositório
 * git clone `git@github.com:Bel-Albuquerque/Blogs-API.git`
