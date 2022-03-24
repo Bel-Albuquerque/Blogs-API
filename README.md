@@ -2,8 +2,7 @@
 
 ## Contexto
 Projeto desenvolvido durante o curso da [Trybe](https://github.com/tryber).
-Nesse projeto construi uma API utilizando Sequelize, NodeJs, Express.
-
+Nesse projeto construí uma API, simulando uma api de blog, utilizando o Sequelize, NodeJs, Express e aplicando MSC.
 
 Criei tabelas usando `models` do `sequelize` e constuí endpoints para consumir os models que construí.
 
